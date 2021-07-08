@@ -182,6 +182,10 @@ func instanceMetadataPatch(d *Daemon, r *http.Request) response.Response {
 		return resp
 	}
 
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	// Load the instance.
 	inst, err := instance.LoadByProjectAndName(d.State(), projectName, name)
 	if err != nil {
@@ -288,6 +292,10 @@ func instanceMetadataPut(d *Daemon, r *http.Request) response.Response {
 	}
 	if resp != nil {
 		return resp
+	}
+
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
 	}
 
 	// Read the new metadata.
@@ -538,6 +546,10 @@ func instanceMetadataTemplatesPost(d *Daemon, r *http.Request) response.Response
 		return resp
 	}
 
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	// Load the container
 	c, err := instance.LoadByProjectAndName(d.State(), projectName, name)
 	if err != nil {
@@ -640,6 +652,10 @@ func instanceMetadataTemplatesDelete(d *Daemon, r *http.Request) response.Respon
 	}
 	if resp != nil {
 		return resp
+	}
+
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
 	}
 
 	// Load the container

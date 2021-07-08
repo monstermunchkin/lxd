@@ -472,6 +472,10 @@ func instanceExecPost(d *Daemon, r *http.Request) response.Response {
 		return response.SmartError(err)
 	}
 
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	if client != nil {
 		url := fmt.Sprintf("/1.0/instances/%s/exec?project=%s", name, projectName)
 		resp, _, err := client.RawQuery("POST", url, post, "")

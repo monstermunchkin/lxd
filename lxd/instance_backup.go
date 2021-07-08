@@ -134,6 +134,10 @@ func instanceBackupsGet(d *Daemon, r *http.Request) response.Response {
 		return resp
 	}
 
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	recursion := util.IsRecursionRequest(r)
 
 	c, err := instance.LoadByProjectAndName(d.State(), projectName, cname)
@@ -223,6 +227,10 @@ func instanceBackupsPost(d *Daemon, r *http.Request) response.Response {
 	}
 	if resp != nil {
 		return resp
+	}
+
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
 	}
 
 	inst, err := instance.LoadByProjectAndName(d.State(), projectName, name)
@@ -390,6 +398,10 @@ func instanceBackupGet(d *Daemon, r *http.Request) response.Response {
 		return resp
 	}
 
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	fullName := name + shared.SnapshotDelimiter + backupName
 	backup, err := instance.BackupLoadByName(d.State(), projectName, fullName)
 	if err != nil {
@@ -448,6 +460,10 @@ func instanceBackupPost(d *Daemon, r *http.Request) response.Response {
 	}
 	if resp != nil {
 		return resp
+	}
+
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
 	}
 
 	req := api.InstanceBackupPost{}
@@ -536,6 +552,10 @@ func instanceBackupDelete(d *Daemon, r *http.Request) response.Response {
 		return resp
 	}
 
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	fullName := name + shared.SnapshotDelimiter + backupName
 	backup, err := instance.BackupLoadByName(d.State(), projectName, fullName)
 	if err != nil {
@@ -602,6 +622,10 @@ func instanceBackupExportGet(d *Daemon, r *http.Request) response.Response {
 	}
 	if resp != nil {
 		return resp
+	}
+
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
 	}
 
 	fullName := name + shared.SnapshotDelimiter + backupName

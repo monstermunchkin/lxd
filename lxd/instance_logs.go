@@ -280,6 +280,10 @@ func instanceLogDelete(d *Daemon, r *http.Request) response.Response {
 		return resp
 	}
 
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	file := mux.Vars(r)["file"]
 
 	err = instance.ValidName(name, false)

@@ -549,6 +549,10 @@ func instanceConsoleLogGet(d *Daemon, r *http.Request) response.Response {
 		return resp
 	}
 
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	if !util.RuntimeLiblxcVersionAtLeast(3, 0, 0) {
 		return response.BadRequest(fmt.Errorf("Querying the console buffer requires liblxc >= 3.0"))
 	}

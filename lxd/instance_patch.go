@@ -71,6 +71,10 @@ func instancePatch(d *Daemon, r *http.Request) response.Response {
 		return resp
 	}
 
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	c, err := instance.LoadByProjectAndName(d.State(), projectName, name)
 	if err != nil {
 		return response.NotFound(err)

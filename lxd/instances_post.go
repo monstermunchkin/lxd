@@ -11,7 +11,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dustinkirkland/golang-petname"
+	petname "github.com/dustinkirkland/golang-petname"
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
 
@@ -34,6 +34,10 @@ import (
 )
 
 func createFromImage(d *Daemon, r *http.Request, projectName string, req *api.InstancesPost) response.Response {
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	hash, err := instance.ResolveImage(d.State(), projectName, req.Source)
 	if err != nil {
 		return response.BadRequest(err)
@@ -141,6 +145,10 @@ func createFromImage(d *Daemon, r *http.Request, projectName string, req *api.In
 }
 
 func createFromNone(d *Daemon, r *http.Request, projectName string, req *api.InstancesPost) response.Response {
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	dbType, err := instancetype.New(string(req.Type))
 	if err != nil {
 		return response.BadRequest(err)
@@ -394,6 +402,10 @@ func createFromMigration(d *Daemon, r *http.Request, projectName string, req *ap
 }
 
 func createFromCopy(d *Daemon, r *http.Request, projectName string, req *api.InstancesPost) response.Response {
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	if req.Source.Source == "" {
 		return response.BadRequest(fmt.Errorf("Must specify a source instance"))
 	}

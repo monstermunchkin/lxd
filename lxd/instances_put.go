@@ -72,6 +72,10 @@ func coalesceErrors(local bool, errors map[string]error) error {
 //   "500":
 //     $ref: "#/responses/InternalServerError"
 func instancesPut(d *Daemon, r *http.Request) response.Response {
+	if d.cluster.LocalNodeIsEvacuated() {
+		return response.Forbidden(fmt.Errorf("Node is evacuated"))
+	}
+
 	projectName := projectParam(r)
 
 	// Don't mess with containers while in setup mode
